@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet,Button, TouchableWithoutFeedback, Text, View } from 'react-native';
+import { StyleSheet, Button, TouchableWithoutFeedback, Text, SafeAreaView, TextInput } from 'react-native';
 import React, {useState} from 'react';
 
  export default function App() {
@@ -8,43 +8,44 @@ import React, {useState} from 'react';
     const [current, setCurrent] = useState('Home');
 
     const HomeScreen =  (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <Text>Hello from mapSocial!!!!</Text>
-        <View style={styles.buttonContainer}>
+        <SafeAreaView style={styles.buttonContainer}>
          <Button 
           title="Select a place"
           color="black"
-          onPress={() => setCurrent(EventCreatorScreen)
-          //navigation.navigate('EventCreatorScreen', {placeName: 'REPLACE_WITH_NAME_OF_SELECT_LOCATION'})
-                  }
-          // width = {168}
-          // height = {26}
-          // left = {111}
-          // top = {747}
-          ></Button>
-        </View>
-      </View>
+          onPress={() => setCurrent('EventPost')}
+          />
+        </SafeAreaView>
+      </SafeAreaView>
     );
     
-    const EventCreatorScreen = (
-      <View style={styles.eventPost}>
-        <Text>This is second Screen!!!!</Text>
-        <Text>This is second Screen!!!!</Text>
-        <Text>This is second Screen!!!!</Text>
-        <Text>This is second Screen!!!!</Text>
-        <Text>This is second Screen!!!!</Text>
-        <Text>This is second Screen!!!!</Text>
-        <Text>This is second Screen!!!!</Text>
-        <Text>This is second Screen!!!!</Text>
-        <Text>This is second Screen!!!!</Text>
+    const EventPost = (
+      <SafeAreaView style={styles.eventPost}>
+        <Button 
+          title="Back to World"
+          color="black"
+          onPress={() => setCurrent('Home')}
+        />
 
+        <TextInput style={styles.input} placeholder="Selected location" />
+
+        <TextInput style={styles.input} placeholder="Event name" />
+
+        <TextInput style={styles.input} placeholder="Description (optional)" />
+        
         
 
-      </View>
+      </SafeAreaView>
 
     );
 
-    return current === 'Home' ? HomeScreen: EventCreatorScreen;
+    const Navigator = {
+      'Home': HomeScreen,
+      'EventPost': EventPost,
+    }
+
+    return Navigator[current];
  
   
 }
@@ -58,9 +59,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  // eventPost: {
-  //   backgroundColor:'',
-  // },
+  eventPost: {
+    flex: 1,
+    backgroundColor:'#F5F5F5',
+  },
+  input: {
+    width: 300,
+    height: 40,
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderColor: '#5470FF',
+    borderWidth: 1,
+    borderRadius: 15, 
+    fontSize: 16,
+
+    width: 233,
+    height: 36,
+    left: 76,
+    top: 127,
+},
   buttonContainer: {
    
     backgroundColor: '#D9D9D9',
