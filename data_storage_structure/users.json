@@ -1,0 +1,21 @@
+{
+  "userToken1": {
+    "name": "name1",
+    "contacts": ["userToken2","userToken3","userToken4"],
+    "groups": {
+      "tag1": ["userToken2","userToken3"],
+      "tag2": ["userToken3","userToken4"]
+    },
+    "visibleEvents": ["eventID1","eventID2","eventID3"]
+  },
+
+  "userToken2": {
+    "name": "name1",
+    "contacts": ["userToken2","userToken3","userToken4"],
+    "groups": {
+      "tag1": ["userToken2","userToken3"],
+      "tag2": ["userToken3","userToken4"]
+    },
+    "visibleEvents": ["eventID1","eventID2","eventID3"]
+  }
+}

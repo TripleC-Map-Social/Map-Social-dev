@@ -1,0 +1,23 @@
+{
+  "eventID1": {
+    "name": "event name",
+    "description": "short description",
+    "location": "location information used to locate the event on the map",
+    "additional_fields": {
+      "time": "time of event",
+      "transportation": "transportation"
+    },
+    "attendee": ["userToken1","userToken2","userToken3"]
+  },
+
+  "eventID2": {
+    "name": "event name",
+    "description": "short description",
+    "location": "location information used to locate the event on the map",
+    "additional_fields": {
+      "time": "time of event",
+      "transportation": "transportation"
+    },
+    "attendee": ["userToken1","userToken2","userToken3"]
+  }
+}
