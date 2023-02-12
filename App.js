@@ -1,6 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Button, TouchableWithoutFeedback, Text, SafeAreaView, TextInput } from 'react-native';
+import { StyleSheet,Button, Text, View, TextInput } from 'react-native';
 import React, {useState} from 'react';
+import MapView from 'react-native-maps';
+
 
  export default function App() {
   
@@ -8,44 +10,74 @@ import React, {useState} from 'react';
     const [current, setCurrent] = useState('Home');
 
     const HomeScreen =  (
-      <SafeAreaView style={styles.container}>
-        <Text>Hello from mapSocial!!!!</Text>
-        <SafeAreaView style={styles.buttonContainer}>
+    <View style={styles.container}>
+    <MapView style={styles.map}
+    //template for region I guess
+    initialRegion={{
+      latitude: 32.8815919,
+      longitude: -117.2379339,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    }}/>
+
+      <Text>Hello from mapSocial!!!!</Text>
+        <View style={styles.buttonContainer}>
          <Button 
           title="Select a place"
           color="black"
-          onPress={() => setCurrent('EventPost')}
-          />
-        </SafeAreaView>
-      </SafeAreaView>
-    );
+          onPress={() => setCurrent(EventCreatorScreen)
+          
+                  }
     
-    const EventPost = (
-      <SafeAreaView style={styles.eventPost}>
-        <Button 
-          title="Back to World"
-          color="black"
-          onPress={() => setCurrent('Home')}
-        />
-
-        <TextInput style={styles.input} placeholder="Selected location" />
-
-        <TextInput style={styles.input} placeholder="Event name" />
-
-        <TextInput style={styles.input} placeholder="Description (optional)" />
-        
-        
-
-      </SafeAreaView>
-
+          ></Button>
+        </View>
+      </View>
     );
 
-    const Navigator = {
-      'Home': HomeScreen,
-      'EventPost': EventPost,
+    //add map
+    // function getInitialState() {
+    //   return {
+    //     region: {
+    //       latitude: 32.8815919,
+    //       longitude: -117.2379339,
+    //       latitudeDelta: 0.0922,
+    //       longitudeDelta: 0.0421,
+    //     },
+    //   };
+    // }
+    
+    //change map region data
+    function onRegionChange(region) {
+      this.setState({ region });
+    }
+    
+    //update new region
+    function render() {
+      return (
+        <MapView
+          region={this.state.region}
+          onRegionChange={this.onRegionChange}
+        />
+      );
     }
 
-    return Navigator[current];
+
+    //screen for event post
+    const EventCreatorScreen = (
+      <View style={styles.eventPost}>
+        
+        <TextInput style={styles.input} placeholder="Selected location" />
+
+        
+
+      </View>
+
+    );
+
+    //return render;
+    
+    return current === 'Home' ? HomeScreen: EventCreatorScreen;
+
  
   
 }
@@ -80,7 +112,6 @@ const styles = StyleSheet.create({
     top: 127,
 },
   buttonContainer: {
-   
     backgroundColor: '#D9D9D9',
     width: 235,
     height: 77,
@@ -88,8 +119,10 @@ const styles = StyleSheet.create({
     top: 721,
     left: 78,
     fontWeight: 400,
-    
-    
-    
+
+  },
+  map: {
+    width: '100%',
+    height: '100%',
   }
 })
