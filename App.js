@@ -1,29 +1,34 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet,Button, Text, View, TextInput } from 'react-native';
 import React, {useState} from 'react';
-import MapView from 'react-native-maps';
+import MapView, {Callout, Marker} from 'react-native-maps';
 
 
  export default function App() {
   
-  
+  state = {
+    poi: null,
+  };
+
     const [current, setCurrent] = useState('Home');
+    console.log("logging ++++++++");
+
 
     const HomeScreen =  (
-    <View style={styles.container}>
-    <MapView style={styles.map}
-    //template for region I guess
-    initialRegion={{
-      latitude: 32.8815919,
-      longitude: -117.2379339,
-      latitudeDelta: 0.01,
-      longitudeDelta: 0.01,
-    }}/>
+      <View style={styles.container}>
+      <MapView style={styles.map}
+      //template for region I guess
+      initialRegion={{
+        latitude: 32.8815919,
+        longitude: -117.2379339,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      }}/>
 
-      <Text>Hello from mapSocial!!!!</Text>
+     
         <View style={styles.buttonContainer}>
          <Button 
-          title="Select a place"
+          title="select a place"
           color="black"
           onPress={() => setCurrent(EventCreatorScreen)
           
@@ -34,18 +39,16 @@ import MapView from 'react-native-maps';
       </View>
     );
 
-    //add map
-    // function getInitialState() {
-    //   return {
-    //     region: {
-    //       latitude: 32.8815919,
-    //       longitude: -117.2379339,
-    //       latitudeDelta: 0.0922,
-    //       longitudeDelta: 0.0421,
-    //     },
-    //   };
-    // }
-    
+
+    function onPoiClick(e) {
+
+      console.log("onPoiClick ++++++++");
+      const poi = e.nativeEvent;
+      this.setState({
+        poi,
+      });
+    }
+
     //change map region data
     function onRegionChange(region) {
       this.setState({ region });
@@ -57,7 +60,18 @@ import MapView from 'react-native-maps';
         <MapView
           region={this.state.region}
           onRegionChange={this.onRegionChange}
-        />
+          onPoiClick={this.onPoiClick}>
+          {this.state.poi && (
+            <Marker coordinate={this.state.poi.coordinate}>
+              <Callout>
+                <View>
+                  <Text>Place Id: {this.state.poi.placeId}</Text>
+                  <Text>Name: {this.state.poi.name}</Text>
+                </View>
+              </Callout>
+            </Marker>
+          )}
+        </MapView>
       );
     }
 
