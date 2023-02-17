@@ -6,33 +6,46 @@ import MapView, {Callout, Marker} from 'react-native-maps';
 
  export default function App() {
   
-  state = {
-    poi: null,
-  };
+
 
     const [current, setCurrent] = useState('Home');
+    const [poi, setPoi] = useState(null);
     console.log("logging ++++++++");
+
+
 
 
     const HomeScreen =  (
       <View style={styles.container}>
       <MapView style={styles.map}
-      //template for region I guess
-      initialRegion={{
-        latitude: 32.8815919,
-        longitude: -117.2379339,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      }}/>
+        //template for region I guess
+        initialRegion={{
+          latitude: 32.8815919,
+          longitude: -117.2379339,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
+        onPoiClick={onPoiClick}>
+        {poi && (
+          <Marker coordinate={poi.coordinate}>
+            <Callout>
+              <View>
+                <Text>Place Id: {poi.placeId}</Text>
+                <Text>Name: {poi.name}</Text>
+              </View>
+            </Callout>
+          </Marker>
+        )}
+      </MapView>
+
+
 
      
         <View style={styles.buttonContainer}>
          <Button 
           title="select a place"
           color="black"
-          onPress={() => setCurrent(EventCreatorScreen)
-          
-                  }
+          onPress={() => setCurrent(EventCreatorScreen)}
     
           ></Button>
         </View>
@@ -41,39 +54,36 @@ import MapView, {Callout, Marker} from 'react-native-maps';
 
 
     function onPoiClick(e) {
-
       console.log("onPoiClick ++++++++");
-      const poi = e.nativeEvent;
-      this.setState({
-        poi,
-      });
+      const newPoi = e.nativeEvent;
+      setPoi(newPoi);
     }
 
     //change map region data
-    function onRegionChange(region) {
-      this.setState({ region });
-    }
+    // function onRegionChange(region) {
+    //   setState({ region });
+    // }
     
     //update new region
-    function render() {
-      return (
-        <MapView
-          region={this.state.region}
-          onRegionChange={this.onRegionChange}
-          onPoiClick={this.onPoiClick}>
-          {this.state.poi && (
-            <Marker coordinate={this.state.poi.coordinate}>
-              <Callout>
-                <View>
-                  <Text>Place Id: {this.state.poi.placeId}</Text>
-                  <Text>Name: {this.state.poi.name}</Text>
-                </View>
-              </Callout>
-            </Marker>
-          )}
-        </MapView>
-      );
-    }
+    // function render() {
+    //   return (
+    //     <MapView
+    //       region={this.state.region}
+    //       onRegionChange={this.onRegionChange}
+    //       onPoiClick={this.onPoiClick}>
+    //       {state.poi && (
+    //         <Marker coordinate={this.state.poi.coordinate}>
+    //           <Callout>
+    //             <View>
+    //               <Text>Place Id: {this.state.poi.placeId}</Text>
+    //               <Text>Name: {this.state.poi.name}</Text>
+    //             </View>
+    //           </Callout>
+    //         </Marker>
+    //       )}
+    //     </MapView>
+    //   );
+    // }
 
 
     //screen for event post
