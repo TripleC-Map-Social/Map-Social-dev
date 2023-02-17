@@ -10,10 +10,16 @@ import MapView, {Callout, Marker} from 'react-native-maps';
 
     const [current, setCurrent] = useState('Home');
     const [poi, setPoi] = useState(null);
-    console.log("logging ++++++++");
 
 
 
+    function onPress(e) {
+      console.log("onPress ++++++++");
+      console.log(e.nativeEvent);
+      console.log(e.placeId, e.name, e.coordinate); // undefined x3
+      const newPoi = e.nativeEvent;
+      setPoi(newPoi);
+    }
 
     const HomeScreen =  (
       <View style={styles.container}>
@@ -25,7 +31,7 @@ import MapView, {Callout, Marker} from 'react-native-maps';
           latitudeDelta: 0.01,
           longitudeDelta: 0.01,
         }}
-        onPoiClick={onPoiClick}>
+        onPress={e => onPress(e)}>
         {poi && (
           <Marker coordinate={poi.coordinate}>
             <Callout>
@@ -53,11 +59,7 @@ import MapView, {Callout, Marker} from 'react-native-maps';
     );
 
 
-    function onPoiClick(e) {
-      console.log("onPoiClick ++++++++");
-      const newPoi = e.nativeEvent;
-      setPoi(newPoi);
-    }
+    
 
     //change map region data
     // function onRegionChange(region) {
