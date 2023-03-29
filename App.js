@@ -12,6 +12,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 export default function App() {
 
   const [current, setCurrent] = useState('Home');   // navigation
+  const [searchText, setSearchText] = useState(''); // search bar
   const [poi, setPoi] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState({
@@ -22,7 +23,7 @@ export default function App() {
     datetime: new Date((new Date()).getTime() + 1000 * 2 * 60 * 60),    // 2小时后
   });
 
-  function onPress(e) {
+  const onPress = (e) => {
     console.log("onPress ++++++++");
     console.log(e.nativeEvent.coordinate);
     // console.log(e.placeId, e.name, e.coordinate);  // undefined x3 
@@ -31,10 +32,59 @@ export default function App() {
     setPoi(e.nativeEvent);
   }
 
+  const submitForm = () => {
+    console.log('-----------submitForm-----------');
+    console.log(form);
+    console.log();
 
+    // todo: send form to backend
+
+    // If sent correctly, close modal, reset form
+    setForm({
+      title: '',
+      description: '',
+      category: '',
+      location: { latitude: 32.88123691352959, longitude: -117.23760781304348 },  // G馆
+      datetime: new Date((new Date()).getTime() + 1000 * 2 * 60 * 60),    // 2小时后
+    });
+    setModalVisible(false);
+  }
+
+  const handleSearchTextChange = (text) => {
+    console.log('handleSearchTextChange');
+    console.log(text);
+
+    // todo: send text to backend, receive matching events
+  }
 
   const HomeScreen = (
-    <View style={styles.container}>
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      
+      {/* Search Component */}
+      <View style={searchStyles.container}>
+        <TextInput
+          style={searchStyles.searchBar}
+          value={searchText}
+          onChangeText={handleSearchTextChange}
+          placeholder="Search"
+        />
+        <View style={searchStyles.buttonContainer}>
+          <TouchableOpacity style={searchStyles.button} onPress={() => handleButtonPress('All')}>
+            <Text style={searchStyles.buttonText}>All</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={searchStyles.button} onPress={() => handleButtonPress('Eat')}>
+            <Text style={searchStyles.buttonText}>Eat</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={searchStyles.button} onPress={() => handleButtonPress('Study')}>
+            <Text style={searchStyles.buttonText}>Study</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={searchStyles.button} onPress={() => handleButtonPress('Hangout')}>
+            <Text style={searchStyles.buttonText}>Hangout</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Map Component */}
       <MapView style={styles.map}
         //template for region I guess
         initialRegion={{
@@ -85,7 +135,7 @@ export default function App() {
                 style={styles.inputSmall}
                 placeholder="What this event is about/ how to find it"
                 value={form.description}
-                onChangeText={txt => { setForm({ ...form, description: txt }); console.log(form) }} />
+                onChangeText={txt => setForm({ ...form, description: txt })} />
 
               <Text style={styles.label}> Category </Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 30 }}>
@@ -144,7 +194,7 @@ export default function App() {
                   <DateTimePicker
                     testID="datePicker"
                     value={form.datetime}
-                    onChange={(e, selectedDate) => {setForm({ ...form, datetime: selectedDate }); console.log(form.datetime)}}
+                    onChange={(e, selectedDate) => { setForm({ ...form, datetime: selectedDate }); }}
                     mode={'date'}
                     display="compact"
                     style={{ marginRight: 30, maxWidth: 300 }}
@@ -158,7 +208,7 @@ export default function App() {
                   <DateTimePicker
                     testID="timePicker"
                     value={form.datetime}
-                    onChange={(e, selectedDate) => {setForm({ ...form, datetime: selectedDate }); console.log(form.datetime)}}
+                    onChange={(e, selectedDate) => setForm({ ...form, datetime: selectedDate })}
                     mode={'time'}
                     display="compact"
                     style={{ marginRight: 50, maxWidth: 200, position: 'fixed' }}
@@ -170,11 +220,15 @@ export default function App() {
 
               <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginVertical: 20 }}>
 
-                <TouchableOpacity style={styles.controlButton} onPress={() => setModalVisible(false)}>
+                <TouchableOpacity
+                  style={styles.controlButton}
+                  onPress={() => setModalVisible(false)}>
                   <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cancel</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={{ ...styles.controlButton, backgroundColor: '#5CC392' }} onPress={() => setModalVisible(false)}>
+                <TouchableOpacity
+                  style={{ ...styles.controlButton, backgroundColor: '#5CC392' }}
+                  onPress={submitForm}>
                   <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'white' }}>Create</Text>
                 </TouchableOpacity>
 
@@ -196,7 +250,53 @@ export default function App() {
 
 }
 
+const searchStyles = StyleSheet.create({
+  container: {
+    position: 'absolute',
+    top: '7%',
+    left: 0,
+    right: 0,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  searchBar: {
+    backgroundColor: 'white',
+    height: 40,
+    width: '85%',
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 3,
+    marginBottom: 10,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '85%',
+  },
+  button: {
+    backgroundColor: 'white',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.8,
+    shadowRadius: 3,
 
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    color: 'black',
+  },
+})
 
 const styles = StyleSheet.create({
   avatar: {
@@ -315,10 +415,12 @@ const styles = StyleSheet.create({
   map: {
     width: '100%',
     height: '100%',
+    flex: 1,
+    position: 'relative',
   }
 });
 
-const searchBarStyles = StyleSheet.create({
+const GMapSearchBarStyles = StyleSheet.create({
   container: {
     flex: 1,
   },
