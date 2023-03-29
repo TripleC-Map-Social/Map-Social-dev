@@ -13,7 +13,9 @@ export default function App() {
 
   const [current, setCurrent] = useState('Home');   // navigation
   const [searchText, setSearchText] = useState(''); // search bar
+  const [searchCategory, setSearchCategory] = useState('All'); // search bar
   const [poi, setPoi] = useState(null);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState({
     title: '',
@@ -51,10 +53,18 @@ export default function App() {
   }
 
   const handleSearchTextChange = (text) => {
-    console.log('handleSearchTextChange');
-    console.log(text);
+    setSearchText(text);
+    console.log(searchText);
+
 
     // todo: send text to backend, receive matching events
+  }
+
+  const handleButtonPress = (category) => {
+    setSearchCategory(category);
+    console.log(searchCategory);
+
+    // todo: filter events by category
   }
 
   const HomeScreen = (
