@@ -1,17 +1,26 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Button, Text, View, SafeAreaView, TextInput, Modal, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet, Button, Text, View, SafeAreaView, TextInput, Image, Modal,
+  TouchableOpacity, TouchableWithoutFeedback, Keyboard
+} from 'react-native';
 import React, { useState } from 'react';
 import MapView, { Callout, Marker } from 'react-native-maps';
 // import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { BlurView } from 'expo-blur';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function App() {
 
   const [current, setCurrent] = useState('Home');   // navigation
   const [poi, setPoi] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [location, setLocation] = useState({ latitude: 32.88123691352959, longitude: -117.23760781304348 });
-  const [eventForm, setEventForm] = useState({ title: '', description: '', category: '', location: '' });
+  const [form, setForm] = useState({
+    title: '',
+    description: '',
+    category: '',
+    location: { latitude: 32.88123691352959, longitude: -117.23760781304348 },  // G馆
+    datetime: new Date((new Date()).getTime() + 1000 * 2 * 60 * 60),    // 2小时后
+  });
 
   function onPress(e) {
     console.log("onPress ++++++++");
@@ -53,83 +62,126 @@ export default function App() {
       <View style={styles.buttonContainer}>
         <Button
           title="Create Event"
-          color="black"
-          // onPress={() => setCurrent(EventCreatorScreen)}
+          color="white"
           onPress={() => setModalVisible(true)}
 
         ></Button>
       </View>
 
+      {/* Create Event Modal */}
       <Modal visible={modalVisible} transparent={true} animationType="slide">
         <BlurView style={{ flex: 1 }} intensity={60}>
-          <SafeAreaView style={{ flex: 1 }}>
-            <Text style={styles.title}> Create your event </Text>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <SafeAreaView style={{ flex: 1 }}>
+              <Text style={styles.title}> Create your event </Text>
 
-            <Text style={styles.label}> Title </Text>
-            <TextInput style={styles.input} placeholder="Event name"
-              value={eventForm.title}
-              onChangeText={txt => setEventForm({ ...eventForm, title: txt })} />
+              <Text style={styles.label}> Title </Text>
+              <TextInput style={styles.input} placeholder="Event name"
+                value={form.title}
+                onChangeText={txt => setForm({ ...form, title: txt })} />
 
-            <Text style={styles.labelSmall}> Description (optional) </Text>
-            <TextInput
-              style={styles.inputSmall}
-              placeholder="What this event is about/ how to find it"
-              value={eventForm.description}
-              onChangeText={txt => { setEventForm({ ...eventForm, description: txt }); console.log(eventForm) }} />
+              <Text style={styles.labelSmall}> Description (optional) </Text>
+              <TextInput
+                style={styles.inputSmall}
+                placeholder="What this event is about/ how to find it"
+                value={form.description}
+                onChangeText={txt => { setForm({ ...form, description: txt }); console.log(form) }} />
 
-            <Text style={styles.label}> Category </Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 30 }}>
+              <Text style={styles.label}> Category </Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 30 }}>
 
-              <TouchableOpacity
-                style={eventForm.category == 'Food' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
-                onPress={e => setEventForm({ ...eventForm, category: 'Food' })}>
-                <Text style={styles.buttonText}>Food</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={form.category == 'Food' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
+                  onPress={e => setForm({ ...form, category: 'Food' })}>
+                  <Text style={styles.buttonText}>Food</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={eventForm.category == 'Study' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
-                onPress={e => setEventForm({ ...eventForm, category: 'Study' })}>
-                <Text style={styles.buttonText}>Study</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={form.category == 'Study' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
+                  onPress={e => setForm({ ...form, category: 'Study' })}>
+                  <Text style={styles.buttonText}>Study</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={eventForm.category == 'Hangout' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
-                onPress={e => setEventForm({ ...eventForm, category: 'Hangout' })}>
-                <Text style={styles.buttonText}>Hangout</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={form.category == 'Hangout' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
+                  onPress={e => setForm({ ...form, category: 'Hangout' })}>
+                  <Text style={styles.buttonText}>Hangout</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity
-                style={eventForm.category == 'Other' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
-                onPress={e => setEventForm({ ...eventForm, category: 'Other' })}>
-                <Text style={styles.buttonText}>Other</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={form.category == 'Other' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
+                  onPress={e => setForm({ ...form, category: 'Other' })}>
+                  <Text style={styles.buttonText}>Other</Text>
+                </TouchableOpacity>
 
-            </View>
+              </View>
 
-            <Text style={styles.label}> Location </Text>
+              <Text style={styles.label}> Location </Text>
 
-            <TextInput style={styles.inputSmall} placeholder="Search for location" />
-
-
-            <MapView
-              style={styles.mapSmall}
-              initialRegion={{ latitude: location.latitude, longitude: location.longitude, latitudeDelta: 0.0007, longitudeDelta: 0.0007, }}
-            >
-              <Marker coordinate={location} />
-            </MapView>
+              <TextInput style={styles.inputSmall} placeholder="Search for location" />
 
 
+              <MapView
+                style={styles.mapSmall}
+                initialRegion={{ latitude: form.location.latitude, longitude: form.location.longitude, latitudeDelta: 0.0007, longitudeDelta: 0.0007, }}
+              >
+                <Marker
+                  coordinate={form.location}
+                >
+                  <Image
+                    source={require('./testdata/avatar1.jpeg')}
+                    style={styles.avatar}
+                  >
+                  </Image>
 
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                </Marker>
+              </MapView>
+
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 35 }}>
+
+                <View>
+                  <Text style={{ ...styles.label, marginLeft: 0, marginBottom: 3 }}>Date</Text>
+                  <DateTimePicker
+                    testID="datePicker"
+                    value={form.datetime}
+                    onChange={(e, selectedDate) => {setForm({ ...form, datetime: selectedDate }); console.log(form.datetime)}}
+                    mode={'date'}
+                    display="compact"
+                    style={{ marginRight: 30, maxWidth: 300 }}
+                  />
+
+                </View>
 
 
-              <TouchableOpacity style={styles.controlButton} onPress={() => setModalVisible(false)}>
-                <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cancel</Text>
-              </TouchableOpacity>
+                <View>
+                  <Text style={{ ...styles.label, marginLeft: 0, marginBottom: 3 }}>Time</Text>
+                  <DateTimePicker
+                    testID="timePicker"
+                    value={form.datetime}
+                    onChange={(e, selectedDate) => {setForm({ ...form, datetime: selectedDate }); console.log(form.datetime)}}
+                    mode={'time'}
+                    display="compact"
+                    style={{ marginRight: 50, maxWidth: 200, position: 'fixed' }}
+                  />
+                </View>
+
+              </View>
 
 
-            </View>
-          </SafeAreaView>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginVertical: 20 }}>
+
+                <TouchableOpacity style={styles.controlButton} onPress={() => setModalVisible(false)}>
+                  <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cancel</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={{ ...styles.controlButton, backgroundColor: '#5CC392' }} onPress={() => setModalVisible(false)}>
+                  <Text style={{ fontSize: 22, fontWeight: 'bold', color: 'white' }}>Create</Text>
+                </TouchableOpacity>
+
+              </View>
+
+            </SafeAreaView>
+          </TouchableWithoutFeedback>
         </BlurView>
       </Modal>
     </View>
@@ -139,8 +191,7 @@ export default function App() {
 
   );
 
-  return current === 'Home' ? HomeScreen : EventCreatorScreen;
-
+  return HomeScreen
 
 
 }
@@ -148,11 +199,18 @@ export default function App() {
 
 
 const styles = StyleSheet.create({
+  avatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 50,
+    borderWidth: 4,
+    borderColor: 'orange',
+  },
   title: {
     fontSize: 37,
     fontWeight: 'bold',
-    marginTop: 40,
-    marginBottom: 30,
+    marginTop: 30,
+    marginBottom: 15,
     textAlign: 'left',
     marginLeft: 30,
   },
@@ -172,7 +230,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 30,
 
-    fontSize: 18,
+    fontSize: 19,
   },
   labelSmall: {
     fontWeight: 'bold',
@@ -180,7 +238,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 30,
 
-    fontSize: 14,
+    fontSize: 15,
   },
   input: {
     // width: 300,
@@ -196,7 +254,7 @@ const styles = StyleSheet.create({
     borderColor: 'green',
 
 
-    fontSize: 18,
+    fontSize: 19,
   },
   inputSmall: {
     height: 35,
@@ -210,14 +268,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderColor: 'green',
 
-    fontSize: 15,
+    fontSize: 16,
   },
   button: {
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 10,
     paddingVertical: 10,
     margin: 10,
-
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 15,
 
   },
@@ -226,7 +285,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   mapSmall: {
-    height: 200,
+    height: 180,
     marginVertical: 10,
     marginHorizontal: 30,
   },
@@ -235,20 +294,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 30,
     paddingVertical: 15,
-    borderRadius: 15,
-
+    borderRadius: 35,
+    width: '40%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   // Create Event button
   buttonContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#5CC399',
     padding: 10,
     width: 235,
     height: 77,
     position: 'absolute',
     top: 721,
     left: 78,
-    borderRadius: 15,
-
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   map: {
     width: '100%',
