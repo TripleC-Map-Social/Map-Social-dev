@@ -19,42 +19,6 @@ import { useRef } from 'react';
   
     const [current, setCurrent] = useState('Home');
 
-    //botton navagation bar
-  
-    const _renderIcon = (routeName, selectedTab) => {
-      let icon = '';
-      let componetName = '';
-      //const shapeView = useRef();
-  
-      switch (routeName) {
-        case 'title1':
-          icon = 'home';
-          componetName = 'Feather';
-          break;
-        case 'title2':
-          icon = 'contacts';
-          componetName = 'AntDesign';
-          break;
-        case 'title3':
-          icon = 'ios-chatbubble-ellipses-outline';
-          componetName = 'Ionicons'
-          break;
-        case 'title4':
-          icon = 'profile';
-          componetName='AntDesign';
-          
-          break;
-      }
-  
-      return (
-        <View
-         
-          name={icon}
-          size={25}
-          color={routeName === selectedTab ? 'black' : 'gray'}
-        />
-      );
-    };
     const renderTabBar = ({ routeName, selectedTab, navigate }) => {
       return (
         <TouchableOpacity
@@ -90,68 +54,15 @@ import { useRef } from 'react';
         underlineColorAndroid="transparent"
       />
       </View>
+      <View style={styles.navbackground}>
+      <AntDesign style= {styles.addBar} name={'pluscircle'} color="#5CC392" size={66} 
+      onPress={() => Alert.alert('Click Action')}/>
+
+        </View>
 
       
 
-      <View style={{ flex: 1 }}>
-      <NavigationContainer>
-        <CurvedBottomBar.Navigator
-          style={styles.bottomBar}
-          strokeWidth={0.5}
-          strokeColor="#DDDDDD"
-          height={55}
-          circleWidth={50}
-          bgColor="white"
-          initialRouteName="title1"
-          borderTopLeftRight
-          renderCircle={({ selectedTab, navigate }) => (
-            <Animated.View style={styles.btnCircle}>
-              <TouchableOpacity
-                style={{
-                  flex: 1,
-                  justifyContent: 'center',
-                  
-                }}
-                //alan: add event post page here
-                onPress={() => Alert.alert('Click Action')}>
-                <FontAwesome name={'plus-circle'} color="#5CC392" size={66} width='100%' height = '100%'/>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
-          tabBar={renderTabBar}>
-          <CurvedBottomBar.Screen
-            name="title1"
-            position="LEFT"
-            component={() => (
-              <View style={{ backgroundColor: '#BFEFFF', flex: 1 }} />
-            )}
-          />
-          <CurvedBottomBar.Screen
-            name="title2"
-            position="LEFT"
-            component={() => (
-              <View style={{ backgroundColor: '#BFEFFF', flex: 1 }} />
-            )}
-          />
-          <CurvedBottomBar.Screen
-            name="title3"
-            component={() => (
-              <View style={{ backgroundColor: '#FFEBCD', flex: 1 }} />
-            )}
-            position="RIGHT"
-          />
-          <CurvedBottomBar.Screen
-            name="title4"
-            component={() => (
-              <View style={{ backgroundColor: '#FFEBCD', flex: 1 }} />
-            )}
-            position="RIGHT"
-          />
-        </CurvedBottomBar.Navigator>
-      </NavigationContainer>
-    </View>
-
-
+      
         </View>
       );
 
@@ -170,9 +81,6 @@ import { useRef } from 'react';
         />
       );
     }
-
-    
-
 
     //screen for event post
     const EventCreatorScreen = (
@@ -193,7 +101,7 @@ import { useRef } from 'react';
 
  
   
-}
+ }
 
 
 
@@ -246,6 +154,29 @@ const styles = StyleSheet.create({
     borderRadius:45,
     
 },
+navbackground:{
+  
+  width: 66,
+  height: 66,
+  borderRadius: 33,
+  backgroundColor: 'white',
+  bottom: 16,
+  position: 'absolute',
+    
+},
+addBar: {
+ 
+  width: 66,
+  height: 66,
+  position: 'absolute',
+
+  
+ 
+  
+  //  top: 500,
+
+
+},
 searchIcon: {
     padding: 10,
     color:"#808080",
@@ -263,28 +194,8 @@ input: {
     
 },
 
-bottomBar: {},
-    btnCircle: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
-      alignItems: 'center',
-      justifyContent: 'center',
-      
-      backgroundColor: 'white',
- 
-      padding: 0,
-      
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 0.5,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 1.41,
-      elevation: 1,
-      bottom: 30,
-    },
+
+    
 
 })
 
