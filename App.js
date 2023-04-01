@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet, Button, Text, View, SafeAreaView, TextInput, Image, Modal,
-  TouchableOpacity, TouchableWithoutFeedback, Keyboard
+  TouchableOpacity, TouchableWithoutFeedback, Keyboard, Switch
 } from 'react-native';
 import React, { useState } from 'react';
 import MapView, { Callout, Marker } from 'react-native-maps';
@@ -13,7 +13,13 @@ export default function App() {
 
   const [current, setCurrent] = useState('Home');   // navigation
   const [searchText, setSearchText] = useState(''); // search bar
-  const [searchCategory, setSearchCategory] = useState('All'); // search bar
+  // const [searchCategory, setSearchCategory] = useState('All'); // search bar
+  // const [searchTime, setSearchTime] = useState(null); // events within 1 hour, 1 day, 1 week, 1 month, 1 year, all time
+  const [search, setSearch] = useState({
+    text: '',
+    category: 'All',
+    time: null,  // events within 1 hour, 1 day, 1 week, 1 month, 1 year, all time
+  });
   const [poi, setPoi] = useState(null);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -21,9 +27,14 @@ export default function App() {
     title: '',
     description: '',
     category: '',
+    public: false,
     location: { latitude: 32.88123691352959, longitude: -117.23760781304348 },  // G馆
     datetime: new Date((new Date()).getTime() + 1000 * 2 * 60 * 60),    // 2小时后
   });
+
+  // ----------------- Fake Backend -----------------
+  const [events, setEvents] = useState([]);
+  // ------------------------------------------------
 
   const onPress = (e) => {
     console.log("onPress ++++++++");
@@ -34,63 +45,90 @@ export default function App() {
     setPoi(e.nativeEvent);
   }
 
+
+  const handleSearchTextChange = (text) => {
+    // setSearchText(text);
+    // console.log(searchText);
+    setSearch({ ...search, text: text });
+    console.log(search);
+
+    // todo: send text to backend, receive matching events (async)
+  }
+
+  const handleCategoryChange = (category) => {
+    // setSearchCategory(category);
+    // console.log(searchCategory, category);
+    setSearch({ ...search, category: category });
+    console.log(search);
+
+    // todo: filter events by category
+  }
+
+  const handleTimeChange = (timeFrame) => {
+    setSearch({ ...search, timeFrame: timeFrame });
+    console.log(search.timeFrame);
+  }
+
   const submitForm = () => {
+    // Check if form is valid
+    if (form.title == '' || form.category == '') {
+      alert('Your event must have a title and a category :)');
+      return;
+    }
     console.log('-----------submitForm-----------');
     console.log(form);
     console.log();
 
-    // todo: send form to backend
+    // TODO: send form to backend
+    setEvents([...events, form]);
 
     // If sent correctly, close modal, reset form
     setForm({
       title: '',
       description: '',
       category: '',
+      public: false,
       location: { latitude: 32.88123691352959, longitude: -117.23760781304348 },  // G馆
       datetime: new Date((new Date()).getTime() + 1000 * 2 * 60 * 60),    // 2小时后
     });
     setModalVisible(false);
   }
 
-  const handleSearchTextChange = (text) => {
-    setSearchText(text);
-    console.log(searchText);
-
-
-    // todo: send text to backend, receive matching events
-  }
-
-  const handleButtonPress = (category) => {
-    setSearchCategory(category);
-    console.log(searchCategory);
-
-    // todo: filter events by category
-  }
-
   const HomeScreen = (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      
+
       {/* Search Component */}
       <View style={searchStyles.container}>
         <TextInput
           style={searchStyles.searchBar}
           value={searchText}
+          placeholder="Search for events"
           onChangeText={handleSearchTextChange}
-          placeholder="Search"
         />
         <View style={searchStyles.buttonContainer}>
-          <TouchableOpacity style={searchStyles.button} onPress={() => handleButtonPress('All')}>
+          <TouchableOpacity
+            style={search.category == 'All' ? { ...searchStyles.button, backgroundColor: '#D3F5E4' } : searchStyles.button}
+            onPress={() => handleCategoryChange('All')}>
             <Text style={searchStyles.buttonText}>All</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={searchStyles.button} onPress={() => handleButtonPress('Eat')}>
+          <TouchableOpacity
+            style={search.category == 'Eat' ? { ...searchStyles.button, backgroundColor: '#FFD580' } : searchStyles.button}
+            onPress={() => handleCategoryChange('Eat')}>
             <Text style={searchStyles.buttonText}>Eat</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={searchStyles.button} onPress={() => handleButtonPress('Study')}>
+          <TouchableOpacity
+            style={search.category == 'Study' ? { ...searchStyles.button, backgroundColor: 'yellow' } : searchStyles.button}
+            onPress={() => handleCategoryChange('Study')}>
             <Text style={searchStyles.buttonText}>Study</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={searchStyles.button} onPress={() => handleButtonPress('Hangout')}>
-            <Text style={searchStyles.buttonText}>Hangout</Text>
+          <TouchableOpacity
+            style={search.category == 'Hangout' ? { ...searchStyles.button, backgroundColor: 'green' } : searchStyles.button}
+            onPress={() => handleCategoryChange('Hangout')}>
+            <Text style={searchStyles.buttonText}>Hgout</Text>
           </TouchableOpacity>
+
+
+
         </View>
       </View>
 
@@ -147,7 +185,11 @@ export default function App() {
                 value={form.description}
                 onChangeText={txt => setForm({ ...form, description: txt })} />
 
-              <Text style={styles.label}> Category </Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', }}>
+                <Text style={styles.label}> Category </Text>
+                <Text style={{ ...styles.labelSmall, marginRight: 30, }}> Public </Text>
+              </View>
+
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 30 }}>
 
                 <TouchableOpacity
@@ -159,13 +201,13 @@ export default function App() {
                 <TouchableOpacity
                   style={form.category == 'Study' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
                   onPress={e => setForm({ ...form, category: 'Study' })}>
-                  <Text style={styles.buttonText}>Study</Text>
+                  <Text style={styles.buttonText}>Stdy</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   style={form.category == 'Hangout' ? { ...styles.button, backgroundColor: '#FFD580' } : styles.button}
                   onPress={e => setForm({ ...form, category: 'Hangout' })}>
-                  <Text style={styles.buttonText}>Hangout</Text>
+                  <Text style={styles.buttonText}>Hgout</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -173,6 +215,15 @@ export default function App() {
                   onPress={e => setForm({ ...form, category: 'Other' })}>
                   <Text style={styles.buttonText}>Other</Text>
                 </TouchableOpacity>
+
+                <Switch
+                  style={{ marginRight: 10, marginTop: 12, alignSelf: 'auto' }}
+                  trackColor={{ false: "#767577", true: "#81b0ff" }}
+                  thumbColor={form.public ? "#f5dd4b" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  value={form.public}
+                  onValueChange={() => setForm({ ...form, public: !form.public })}
+                />
 
               </View>
 
@@ -263,7 +314,7 @@ export default function App() {
 const searchStyles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: '7%',
+    top: '8%',
     left: 0,
     right: 0,
     backgroundColor: 'transparent',
@@ -279,8 +330,11 @@ const searchStyles = StyleSheet.create({
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.8,
-    shadowRadius: 3,
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+
+    borderColor: '#F3F3F3',
+    borderWidth: 2,
     marginBottom: 10,
   },
   buttonContainer: {
@@ -298,13 +352,26 @@ const searchStyles = StyleSheet.create({
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.8,
+    shadowOpacity: 0.5,
     shadowRadius: 3,
-
+  },
+  buttonHighlighted: {
+    backgroundColor: '#D3F5E4',
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
   },
   buttonText: {
     fontWeight: 'bold',
     color: 'black',
+    fontSize: 12,
   },
 })
 
@@ -389,6 +456,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 15,
 
+  },
+  buttonHighlighted: {
+    backgroundColor: '#FFD580',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    margin: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 15,
   },
   buttonText: {
     fontSize: 13,
