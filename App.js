@@ -22,7 +22,7 @@ export default function App() {
     // minute: 'numeric',
     hour12: true,
   };
-  const ZOOM = 0.3;    // map zoom level when creating new event
+  const ZOOM = 0.2;    // map zoom level when creating new event
 
 
   // ----------------- States -----------------
@@ -53,11 +53,17 @@ export default function App() {
   const [region, setRegion] = useState({
     latitude: 32.88123691352959,
     longitude: -117.23760781304348,
-    latitudeDelta: 0.0007,
-    longitudeDelta: 0.0007
+    latitudeDelta: 0.007,
+    longitudeDelta: 0.002,
   });
 
+  useEffect(() => {
+    if (modalVisible) {
+      newMapRef.current.animateToRegion({ latitude: form.location.latitude, longitude: form.location.longitude, latitudeDelta: region.latitudeDelta, longitudeDelta: region.longitudeDelta });
+    }
+  }, [newMapRef.current]);
 
+    
 
   // ----------------- Fake Backend -----------------
   const [events, setEvents] = useState([]);
@@ -169,7 +175,12 @@ export default function App() {
       <MapView style={styles.map}
         initialRegion={region}
         ref={mapRef}
-        onRegionChangeComplete={(reg) => setRegion(reg)}
+        onRegionChangeComplete={(reg) => {
+          setRegion(reg);
+          // console.log({ reg });
+          setForm({ ...form, location: { latitude: reg.latitude, longitude: reg.longitude } });
+
+        }}
       // onRegionChangeComplete={(reg) => setRegion(reg)}
       >
         {events.map((event, index) => (
@@ -277,7 +288,9 @@ export default function App() {
                 // initialRegion={{ latitude: form.location.latitude, longitude: form.location.longitude, latitudeDelta: 0.0007, longitudeDelta: 0.0007, }}
                 initialRegion={region}
                 ref={newMapRef}
+                
                 onRegionChangeComplete={(reg) => setRegion(reg)}
+                
               >
                 <Marker
                   coordinate={form.location}
@@ -350,7 +363,7 @@ export default function App() {
 
                 <TouchableOpacity
                   style={styles.controlButton}
-                  onPress={() => {setModalVisible(false); setRegion({...region,latitudeDelta: region.latitudeDelta / ZOOM, longitudeDelta: region.longitudeDelta / ZOOM });}}>
+                  onPress={() => { setModalVisible(false); setRegion({ ...region, latitudeDelta: region.latitudeDelta / ZOOM, longitudeDelta: region.longitudeDelta / ZOOM }); }}>
                   <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cancel</Text>
                 </TouchableOpacity>
 
@@ -539,7 +552,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   mapSmall: {
-    height: 180,
+    height: 190,
     marginVertical: 10,
     marginHorizontal: 30,
   },
