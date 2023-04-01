@@ -57,16 +57,18 @@ export default function App() {
     longitudeDelta: 0.002,
   });
 
+  // Make sure newMap is centered on mainMap initially
   useEffect(() => {
     if (modalVisible) {
       newMapRef.current.animateToRegion({ latitude: form.location.latitude, longitude: form.location.longitude, latitudeDelta: region.latitudeDelta, longitudeDelta: region.longitudeDelta });
     }
   }, [newMapRef.current]);
 
-    
+
 
   // ----------------- Fake Backend -----------------
   const [events, setEvents] = useState([]);
+  const [users, setUsers] = useState([]);
   // ------------------------------------------------
 
 
@@ -76,7 +78,7 @@ export default function App() {
     setSearch({ ...search, text: text });
     console.log(search);
 
-    // todo: send text to backend, receive matching events (async)
+    // send text to backend, receive matching events (async)
   }
 
   const handleCategoryChange = (category) => {
@@ -85,13 +87,9 @@ export default function App() {
     setSearch({ ...search, category: category });
     console.log(search);
 
-    // todo: filter events by category
+    // backend filter events by category
   }
 
-  const handleTimeChange = (timeFrame) => {
-    setSearch({ ...search, timeFrame: timeFrame });
-    console.log(search.timeFrame);
-  }
 
   const submitForm = () => {
     // Check if form is valid
@@ -175,13 +173,12 @@ export default function App() {
       <MapView style={styles.map}
         initialRegion={region}
         ref={mapRef}
-        onRegionChangeComplete={(reg) => {
-          setRegion(reg);
-          // console.log({ reg });
-          setForm({ ...form, location: { latitude: reg.latitude, longitude: reg.longitude } });
-
-        }}
-      // onRegionChangeComplete={(reg) => setRegion(reg)}
+        // onRegionChangeComplete={(reg) => {
+        //   setRegion(reg);
+        //   // console.log({ reg });
+        //   setForm({ ...form, location: { latitude: reg.latitude, longitude: reg.longitude } });
+        // }}
+        onRegionChangeComplete={(reg) => setRegion(reg)}
       >
         {events.map((event, index) => (
           <Marker
@@ -189,10 +186,11 @@ export default function App() {
             coordinate={event.location}
           >
             <Image source={event.user} style={styles.avatar} />
-            <Callout >
-              <View>
-                <Text>{event.title}</Text>
-                <Text>{event.datetime.toLocaleString('en-US', dateFormat)}</Text>
+            {/* TODO: format Callout popup. Clickable. */}
+            <Callout style={calloutStyles.callout}>
+              <View >
+                <Text style={calloutStyles.title}>{event.title}</Text>
+                <Text style={calloutStyles.description}>{event.datetime.toLocaleString('en-US', dateFormat)}</Text>
                 <Button title="Join" onPress={() => { }} />
               </View>
             </Callout>
@@ -288,9 +286,9 @@ export default function App() {
                 // initialRegion={{ latitude: form.location.latitude, longitude: form.location.longitude, latitudeDelta: 0.0007, longitudeDelta: 0.0007, }}
                 initialRegion={region}
                 ref={newMapRef}
-                
+
                 onRegionChangeComplete={(reg) => setRegion(reg)}
-                
+
               >
                 <Marker
                   coordinate={form.location}
@@ -390,6 +388,27 @@ export default function App() {
 
 
 }
+
+const calloutStyles = StyleSheet.create({
+  callout: {
+    width: 200,
+    height: 50,
+    padding: 10,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  description: {
+    fontSize: 14,
+    textAlign: 'justify',
+  },
+});
 
 const searchStyles = StyleSheet.create({
   container: {
