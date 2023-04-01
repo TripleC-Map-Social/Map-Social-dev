@@ -1,27 +1,43 @@
 import { StatusBar } from 'expo-status-bar';
 import {
   StyleSheet, Button, Text, View, SafeAreaView, TextInput, Image, Modal,
-  TouchableOpacity, TouchableWithoutFeedback, Keyboard, Switch
+  TouchableOpacity, TouchableHighlight, TouchableWithoutFeedback, Keyboard, Switch,
+  Vibration, Animated,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MapView, { Callout, Marker } from 'react-native-maps';
 // import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { BlurView } from 'expo-blur';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function App() {
+  // ---------------- Constants ----------------
+  const userImage = require('./testdata/avatar1.jpeg');
+  const dateFormat = {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    // year: 'numeric',
+    hour: 'numeric',
+    // minute: 'numeric',
+    hour12: true,
+  };
+  const ZOOM = 0.3;    // map zoom level when creating new event
 
+
+  // ----------------- States -----------------
   const [current, setCurrent] = useState('Home');   // navigation
-  const [searchText, setSearchText] = useState(''); // search bar
-  // const [searchCategory, setSearchCategory] = useState('All'); // search bar
-  // const [searchTime, setSearchTime] = useState(null); // events within 1 hour, 1 day, 1 week, 1 month, 1 year, all time
+  const mapRef = useRef(null);
+
+  // Search Component
+  const [searchText, setSearchText] = useState('');
   const [search, setSearch] = useState({
     text: '',
     category: 'All',
     time: null,  // events within 1 hour, 1 day, 1 week, 1 month, 1 year, all time
   });
-  const [poi, setPoi] = useState(null);
 
+  // Create Event Modal
   const [modalVisible, setModalVisible] = useState(false);
   const [form, setForm] = useState({
     title: '',
@@ -31,19 +47,21 @@ export default function App() {
     location: { latitude: 32.88123691352959, longitude: -117.23760781304348 },  // G馆
     datetime: new Date((new Date()).getTime() + 1000 * 2 * 60 * 60),    // 2小时后
   });
+  // Mini Map in Create Event Modal
+  const newMapRef = React.useRef(null);
+  const markerSize = new Animated.Value(50);
+  const [region, setRegion] = useState({
+    latitude: 32.88123691352959,
+    longitude: -117.23760781304348,
+    latitudeDelta: 0.0007,
+    longitudeDelta: 0.0007
+  });
+
+
 
   // ----------------- Fake Backend -----------------
   const [events, setEvents] = useState([]);
   // ------------------------------------------------
-
-  const onPress = (e) => {
-    console.log("onPress ++++++++");
-    console.log(e.nativeEvent.coordinate);
-    // console.log(e.placeId, e.name, e.coordinate);  // undefined x3 
-    // 需要后端：(经度、纬度) --> 从已创建的events中找到最近的event(groups)。
-    // If there's are event(s) here around, show them as popup(s)
-    setPoi(e.nativeEvent);
-  }
 
 
   const handleSearchTextChange = (text) => {
@@ -75,14 +93,19 @@ export default function App() {
       alert('Your event must have a title and a category :)');
       return;
     }
-    console.log('-----------submitForm-----------');
+
+    // TODO: send form to backend
+    let newForm = { ...form, user: userImage }
+    setEvents([...events, newForm]);
+
+    // Set main map region to new event location
+    mapRef.current.animateToRegion({ latitude: form.location.latitude, longitude: form.location.longitude, latitudeDelta: region.latitudeDelta, longitudeDelta: region.longitudeDelta });
+
+    console.log('-----------Submitted Form-----------');
     console.log(form);
     console.log();
 
-    // TODO: send form to backend
-    setEvents([...events, form]);
-
-    // If sent correctly, close modal, reset form
+    // If new event is sent correctly, close modal, reset form
     setForm({
       title: '',
       description: '',
@@ -91,8 +114,14 @@ export default function App() {
       location: { latitude: 32.88123691352959, longitude: -117.23760781304348 },  // G馆
       datetime: new Date((new Date()).getTime() + 1000 * 2 * 60 * 60),    // 2小时后
     });
+
+
     setModalVisible(false);
   }
+
+
+
+
 
   const HomeScreen = (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
@@ -126,32 +155,38 @@ export default function App() {
             onPress={() => handleCategoryChange('Hangout')}>
             <Text style={searchStyles.buttonText}>Hgout</Text>
           </TouchableOpacity>
-
+          <TouchableOpacity
+            style={searchStyles.button}
+            onPress={() => { setEvents([]) }}>
+            <Text style={searchStyles.buttonText}>ClearAll</Text>
+          </TouchableOpacity>
 
 
         </View>
       </View>
 
-      {/* Map Component */}
+      {/* Main Map Component */}
       <MapView style={styles.map}
-        //template for region I guess
-        initialRegion={{
-          latitude: 32.8815919,
-          longitude: -117.2379339,
-          latitudeDelta: 0.01,
-          longitudeDelta: 0.01,
-        }}
-        onPress={e => onPress(e)}>
-        {poi && (
-          <Marker coordinate={poi.coordinate}>
-            <Callout>
+        initialRegion={region}
+        ref={mapRef}
+        onRegionChangeComplete={(reg) => setRegion(reg)}
+      // onRegionChangeComplete={(reg) => setRegion(reg)}
+      >
+        {events.map((event, index) => (
+          <Marker
+            key={index}
+            coordinate={event.location}
+          >
+            <Image source={event.user} style={styles.avatar} />
+            <Callout >
               <View>
-                <Text>Place Id: {poi.placeId}</Text>
-                <Text>Name: {poi.name}</Text>
+                <Text>{event.title}</Text>
+                <Text>{event.datetime.toLocaleString('en-US', dateFormat)}</Text>
+                <Button title="Join" onPress={() => { }} />
               </View>
             </Callout>
-          </Marker>
-        )}
+          </Marker>))}
+
       </MapView>
 
 
@@ -161,7 +196,12 @@ export default function App() {
         <Button
           title="Create Event"
           color="white"
-          onPress={() => setModalVisible(true)}
+          onPress={() => {
+            setModalVisible(true);
+            setForm({ ...form, location: { latitude: region.latitude, longitude: region.longitude } });
+            setRegion({ ...region, latitudeDelta: region.latitudeDelta * ZOOM, longitudeDelta: region.longitudeDelta * ZOOM });
+          }}
+
 
         ></Button>
       </View>
@@ -234,17 +274,44 @@ export default function App() {
 
               <MapView
                 style={styles.mapSmall}
-                initialRegion={{ latitude: form.location.latitude, longitude: form.location.longitude, latitudeDelta: 0.0007, longitudeDelta: 0.0007, }}
+                // initialRegion={{ latitude: form.location.latitude, longitude: form.location.longitude, latitudeDelta: 0.0007, longitudeDelta: 0.0007, }}
+                initialRegion={region}
+                ref={newMapRef}
+                onRegionChangeComplete={(reg) => setRegion(reg)}
               >
                 <Marker
                   coordinate={form.location}
-                >
-                  <Image
-                    source={require('./testdata/avatar1.jpeg')}
-                    style={styles.avatar}
-                  >
-                  </Image>
+                  draggable
+                  onDragStart={() => {
+                    Vibration.vibrate(100);
+                    Animated.timing(markerSize, {
+                      toValue: 60,
+                      duration: 50,
+                      useNativeDriver: false,
+                    }).start();
+                  }}
+                  onDragEnd={(e) => {
+                    const coord = e.nativeEvent.coordinate;
+                    setForm({ ...form, location: coord });
+                    const newRegion = {
+                      latitude: coord.latitude,
+                      longitude: coord.longitude,
+                      latitudeDelta: region.latitudeDelta,
+                      longitudeDelta: region.longtitudeDelta,
+                    }
+                    newMapRef.current.animateToRegion(newRegion);
+                    Animated.timing(markerSize, {
+                      toValue: 50,
+                      duration: 100,
+                      useNativeDriver: false,
+                    }).start();
 
+                  }}
+                >
+                  <Animated.Image
+                    source={userImage || require('./testdata/defaultAvatar.jpg')}
+                    style={{ ...styles.avatar, width: markerSize, height: markerSize }}
+                  />
                 </Marker>
               </MapView>
 
@@ -283,7 +350,7 @@ export default function App() {
 
                 <TouchableOpacity
                   style={styles.controlButton}
-                  onPress={() => setModalVisible(false)}>
+                  onPress={() => {setModalVisible(false); setRegion({...region,latitudeDelta: region.latitudeDelta / ZOOM, longitudeDelta: region.longitudeDelta / ZOOM });}}>
                   <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Cancel</Text>
                 </TouchableOpacity>
 
@@ -382,6 +449,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 4,
     borderColor: 'orange',
+    resizeMode: 'contain',
   },
   title: {
     fontSize: 37,
