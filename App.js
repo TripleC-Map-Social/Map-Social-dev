@@ -9,6 +9,8 @@ import MapView, { Callout, Marker } from 'react-native-maps';
 // import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import { BlurView } from 'expo-blur';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function App() {
   // ---------------- Constants ----------------
@@ -132,12 +134,14 @@ export default function App() {
 
       {/* Search Component */}
       <View style={searchStyles.container}>
+      <Icon style={searchStyles.searchIcon} name="search" size={20} color="#000"/>
         <TextInput
           style={searchStyles.searchBar}
           value={searchText}
-          placeholder="Search for events"
+          placeholder={"search for event"}
           onChangeText={handleSearchTextChange}
-        />
+        > 
+       </TextInput>
         <View style={searchStyles.buttonContainer}>
           <TouchableOpacity
             style={search.category == 'All' ? { ...searchStyles.button, backgroundColor: '#D3F5E4' } : searchStyles.button}
@@ -201,18 +205,16 @@ export default function App() {
 
 
       {/* Create Event button */}
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Create Event"
-          color="white"
-          onPress={() => {
-            setModalVisible(true);
-            setForm({ ...form, location: { latitude: region.latitude, longitude: region.longitude } });
-            setRegion({ ...region, latitudeDelta: region.latitudeDelta * ZOOM, longitudeDelta: region.longitudeDelta * ZOOM });
-          }}
+      <View style={styles.navbackground}>
 
 
-        ></Button>
+<AntDesign style= {styles.addBar} name={'pluscircle'} color="#5CC392" size={66} 
+     onPress={() => {
+      setModalVisible(true);
+      setForm({ ...form, location: { latitude: region.latitude, longitude: region.longitude } });
+      setRegion({ ...region, latitudeDelta: region.latitudeDelta * ZOOM, longitudeDelta: region.longitudeDelta * ZOOM });
+    }}/>
+
       </View>
 
       {/* Create Event Modal */}
@@ -414,33 +416,46 @@ const searchStyles = StyleSheet.create({
   container: {
     position: 'absolute',
     top: '8%',
-    left: 0,
-    right: 0,
+    left: '10%',
     backgroundColor: 'transparent',
-    alignItems: 'center',
-    justifyContent: 'center',
+    height: '5%',
     zIndex: 1,
   },
   searchBar: {
     backgroundColor: 'white',
-    height: 40,
-    width: '85%',
+    height: '100%',
+    width: '75%',
     paddingHorizontal: 20,
     borderRadius: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
+    zIndex:2,
+    paddingStart: 35,
+  
 
     borderColor: '#F3F3F3',
     borderWidth: 2,
     marginBottom: 10,
+    paddingLeft: '4%',
   },
+  searchIcon: {
+    left: '4%',
+    color:"#808080",
+    paddingRight: 5,
+    // top:'70%',
+    zIndex:3,
+    top: '70%',
+    
+  
+},
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '85%',
   },
+  
   button: {
     backgroundColor: 'white',
     borderRadius: 20,
@@ -471,7 +486,11 @@ const searchStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     fontSize: 12,
+    paddingHorizontal: 1,
   },
+  category: {
+    paddingHorizontal: 5,
+  }
 })
 
 const styles = StyleSheet.create({
@@ -490,6 +509,20 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: 'left',
     marginLeft: 30,
+  },
+  navbackground:{
+    backgroundColor: 'white',
+    width: 66,
+    height: 66,
+    borderRadius: 33,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
+    bottom: '4%',
+    alignItem: 'center',
+    position: 'absolute',
+    zIndex: 1,
+      
   },
   container: {
     flex: 1,
@@ -603,6 +636,7 @@ const styles = StyleSheet.create({
     height: '100%',
     flex: 1,
     position: 'relative',
+    zIndex:0,
   }
 });
 
@@ -614,6 +648,14 @@ const GMapSearchBarStyles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0)',
     borderTopWidth: 0,
     borderBottomWidth: 0,
+
+  },
+  addBar: {
+ 
+    width: 66,
+    height: 66,
+    position: 'absolute',
+  
 
   },
   textInput: {
