@@ -9,13 +9,19 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@ant-design/react-native": "^5.0.4",
     "@expo/webpack-config": "^0.17.2",
+    "@react-native-community/datetimepicker": "^7.0.0",
     "expo": "~47.0.3",
+    "expo-blur": "^12.2.2",
     "expo-cli": "^6.1.0",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-native": "0.70.5",
+    "react-native-google-places-autocomplete": "^2.5.1",
+    "react-native-maps": "^1.4.0",
+    "react-native-vector-icons": "^9.2.0",
     "react-native-web": "~0.18.9"
   },
   "devDependencies": {
