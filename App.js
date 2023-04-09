@@ -29,10 +29,12 @@ export default function App() {
 
   // ----------------- States -----------------
   const [current, setCurrent] = useState('Home');   // navigation
+  const searchBarRef = useRef(null);
   const mapRef = useRef(null);
 
+
+
   // Search Component
-  const [searchText, setSearchText] = useState('');
   const [search, setSearch] = useState({
     text: '',
     category: 'All',
@@ -134,14 +136,16 @@ export default function App() {
 
       {/* Search Component */}
       <View style={searchStyles.container}>
-      <Icon style={searchStyles.searchIcon} name="search" size={20} color="#000"/>
+        <Icon style={searchStyles.searchIcon} name="search" size={20} color="#000" 
+        onPress={() => searchBarRef.current.focus()} />
         <TextInput
+          ref={searchBarRef}
           style={searchStyles.searchBar}
-          value={searchText}
+          value={search.text}
           placeholder={"search for event"}
           onChangeText={handleSearchTextChange}
-        > 
-       </TextInput>
+        >
+        </TextInput>
         <View style={searchStyles.buttonContainer}>
           <TouchableOpacity
             style={search.category == 'All' ? { ...searchStyles.button, backgroundColor: '#D3F5E4' } : searchStyles.button}
@@ -208,12 +212,12 @@ export default function App() {
       <View style={styles.navbackground}>
 
 
-<AntDesign style= {styles.addBar} name={'pluscircle'} color="#5CC392" size={66} 
-     onPress={() => {
-      setModalVisible(true);
-      setForm({ ...form, location: { latitude: region.latitude, longitude: region.longitude } });
-      setRegion({ ...region, latitudeDelta: region.latitudeDelta * ZOOM, longitudeDelta: region.longitudeDelta * ZOOM });
-    }}/>
+        <AntDesign style={styles.addBar} name={'pluscircle'} color="#5CC392" size={66}
+          onPress={() => {
+            setModalVisible(true);
+            setForm({ ...form, location: { latitude: region.latitude, longitude: region.longitude } });
+            setRegion({ ...region, latitudeDelta: region.latitudeDelta * ZOOM, longitudeDelta: region.longitudeDelta * ZOOM });
+          }} />
 
       </View>
 
@@ -431,9 +435,9 @@ const searchStyles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
-    zIndex:2,
+    zIndex: 2,
     paddingStart: 35,
-  
+
 
     borderColor: '#F3F3F3',
     borderWidth: 2,
@@ -442,20 +446,20 @@ const searchStyles = StyleSheet.create({
   },
   searchIcon: {
     left: '4%',
-    color:"#808080",
+    color: "#808080",
     paddingRight: 5,
     // top:'70%',
-    zIndex:3,
+    zIndex: 3,
     top: '70%',
-    
-  
-},
+
+
+  },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '85%',
   },
-  
+
   button: {
     backgroundColor: 'white',
     borderRadius: 20,
@@ -510,7 +514,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     marginLeft: 30,
   },
-  navbackground:{
+  navbackground: {
     backgroundColor: 'white',
     width: 66,
     height: 66,
@@ -522,7 +526,7 @@ const styles = StyleSheet.create({
     alignItem: 'center',
     position: 'absolute',
     zIndex: 1,
-      
+
   },
   container: {
     flex: 1,
@@ -636,7 +640,7 @@ const styles = StyleSheet.create({
     height: '100%',
     flex: 1,
     position: 'relative',
-    zIndex:0,
+    zIndex: 0,
   }
 });
 
@@ -651,11 +655,11 @@ const GMapSearchBarStyles = StyleSheet.create({
 
   },
   addBar: {
- 
+
     width: 66,
     height: 66,
     position: 'absolute',
-  
+
 
   },
   textInput: {
