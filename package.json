@@ -6,26 +6,49 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "firebase-start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
   "dependencies": {
     "@ant-design/react-native": "^5.0.4",
-    "@expo/webpack-config": "^0.17.2",
+    "@expo/webpack-config": "^18.0.3",
     "@react-native-community/datetimepicker": "^7.0.0",
-    "expo": "~47.0.3",
+    "expo": "^44.0.6",
     "expo-blur": "^12.2.2",
-    "expo-cli": "^6.1.0",
+    "expo-cli": "^6.3.2",
     "expo-status-bar": "~1.4.2",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.1.0",
+    "@testing-library/user-event": "^12.1.10",
+    "npx": "^10.2.2",
     "react": "18.1.0",
     "react-dom": "18.1.0",
-    "react-native": "0.70.5",
+    "react-native": "^0.70.5",
     "react-native-google-places-autocomplete": "^2.5.1",
     "react-native-maps": "^1.4.0",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-web": "~0.18.9"
+    "react-native-web": "~0.18.9",
+    "firebase": "^9.19.1",
+    "react-scripts": "^5.0.1",
+    "web-vitals": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
   },
-  "private": true
+  "private": true,
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
 }
