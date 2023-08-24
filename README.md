@@ -9,4 +9,12 @@ Initially aimed at college students, the plan is to eventually expand the platfo
 
 The project is in its early stages and seeking motivated designers and developers to join the team. If you're passionate about making a positive impact on people's social lives and want to work on a cutting-edge social app, this is your chance. Help shape the future of socializing and join the Map Social team today.
 
+## Create your event
+![create_event](https://github.com/TripleC-Map-Social/Map-Social-dev/assets/68050193/84b3f8b9-6bf8-494a-8f22-876104b62f63)
+![event_location](https://github.com/TripleC-Map-Social/Map-Social-dev/assets/68050193/92bcad4f-c8a8-4f11-85d3-8b72eeaba193)
+
+
 ## Tech Stack
+- React-Native
+- Firebase
+- Spring Boot
